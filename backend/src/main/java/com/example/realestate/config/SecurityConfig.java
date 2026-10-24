@@ -70,8 +70,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public auth endpoints
                 .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll()
-                // Public property browsing
+                // Public property browsing and metadata
                 .requestMatchers(HttpMethod.GET, "/api/v1/properties/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/amenities/**").permitAll()
                 // Public inquiry submission (anyone can contact agent/owner)
                 .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").permitAll()
                 // Public static uploaded images
