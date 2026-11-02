@@ -18,4 +18,13 @@ export const favoriteService = {
   removeFavorite: (propertyId: string): Promise<void> => {
     return ApiClient.delete(`/favorites/${propertyId}`);
   },
+
+  getMyFavorites: async (): Promise<PropertySummary[]> => {
+    const res = await ApiClient.get<PagedResponse<PropertySummary>>('/favorites', { page: 0, size: 100 });
+    return res.content;
+  },
+
+  toggleFavorite: async (propertyId: string): Promise<void> => {
+    return ApiClient.delete(`/favorites/${propertyId}`);
+  },
 };

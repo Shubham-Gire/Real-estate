@@ -142,14 +142,32 @@ export const Navbar: React.FC = () => {
                   )}
                 </Link>
 
-                {/* Add Property CTA */}
-                <Link
-                  to="/dashboard/properties/add"
-                  className="inline-flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-xs shadow-primary-500/20 transition-all hover:shadow-md"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  <span>List Property</span>
-                </Link>
+                {/* Role-Specific Primary CTA */}
+                {user.role === 'ROLE_AGENT' ? (
+                  <Link
+                    to="/agent/dashboard"
+                    className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-xs shadow-indigo-500/20 transition-all hover:shadow-md"
+                  >
+                    <Building className="w-4 h-4" />
+                    <span>Agent CRM</span>
+                  </Link>
+                ) : user.role === 'ROLE_ADMIN' ? (
+                  <Link
+                    to="/admin"
+                    className="inline-flex items-center space-x-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-xs shadow-amber-500/20 transition-all hover:shadow-md"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Admin Console</span>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/portal/submit-property"
+                    className="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-xs shadow-emerald-500/20 transition-all hover:shadow-md"
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                    <span>List Property</span>
+                  </Link>
+                )}
 
                 {/* Profile Dropdown */}
                 <div className="relative">
@@ -191,33 +209,57 @@ export const Navbar: React.FC = () => {
                         <Link
                           to="/admin"
                           onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center px-4 py-2.5 text-sm font-semibold text-primary-700 hover:bg-primary-50 transition-colors"
+                          className="flex items-center px-4 py-2.5 text-sm font-bold text-amber-700 hover:bg-amber-50 transition-colors"
                         >
-                          <ShieldCheck className="w-4 h-4 mr-3 text-primary-600" />
+                          <ShieldCheck className="w-4 h-4 mr-3 text-amber-600" />
                           Admin Console
                         </Link>
                       )}
 
-                      <Link
-                        to="/dashboard"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                      >
-                        <LayoutDashboard className="w-4 h-4 mr-3 text-slate-400" />
-                        My Dashboard
-                      </Link>
+                      {user.role === 'ROLE_AGENT' && (
+                        <>
+                          <Link
+                            to="/agent/dashboard"
+                            onClick={() => setProfileDropdownOpen(false)}
+                            className="flex items-center px-4 py-2.5 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors"
+                          >
+                            <LayoutDashboard className="w-4 h-4 mr-3 text-indigo-600" />
+                            Agent CRM Cockpit
+                          </Link>
+                          <Link
+                            to="/agent/pipeline"
+                            onClick={() => setProfileDropdownOpen(false)}
+                            className="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <Building className="w-4 h-4 mr-3 text-slate-400" />
+                            Lead Pipeline (Kanban)
+                          </Link>
+                        </>
+                      )}
+
+                      {user.role === 'ROLE_USER' && (
+                        <>
+                          <Link
+                            to="/portal/overview"
+                            onClick={() => setProfileDropdownOpen(false)}
+                            className="flex items-center px-4 py-2.5 text-sm font-bold text-emerald-700 hover:bg-emerald-50 transition-colors"
+                          >
+                            <LayoutDashboard className="w-4 h-4 mr-3 text-emerald-600" />
+                            Client Portal Hub
+                          </Link>
+                          <Link
+                            to="/portal/showings"
+                            onClick={() => setProfileDropdownOpen(false)}
+                            className="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <Building className="w-4 h-4 mr-3 text-slate-400" />
+                            My Scheduled Tours
+                          </Link>
+                        </>
+                      )}
 
                       <Link
-                        to="/dashboard/properties"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                      >
-                        <Building className="w-4 h-4 mr-3 text-slate-400" />
-                        My Properties
-                      </Link>
-
-                      <Link
-                        to="/dashboard/profile"
+                        to="/portal/profile"
                         onClick={() => setProfileDropdownOpen(false)}
                         className="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                       >

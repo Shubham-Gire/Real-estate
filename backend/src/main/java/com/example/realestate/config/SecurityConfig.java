@@ -74,12 +74,15 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/properties/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/amenities/**").permitAll()
-                // Public inquiry submission (anyone can contact agent/owner)
+                // Public inquiry and showing submission (anyone can contact or request a tour)
                 .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/showings").permitAll()
                 // Public static uploaded images
                 .requestMatchers("/uploads/**").permitAll()
                 // Actuator and API Documentation
                 .requestMatchers("/actuator/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                // Agent CRM portal endpoints
+                .requestMatchers("/api/v1/crm/**").hasAnyAuthority("ROLE_AGENT", "ROLE_ADMIN")
                 // Admin dashboard & moderation
                 .requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
                 // All other requests require authentication

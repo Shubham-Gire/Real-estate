@@ -52,6 +52,10 @@ export const propertyService = {
     return ApiClient.patch(`/properties/${id}/status`, { status, reason });
   },
 
+  updatePropertyStatus: (id: string, status: PropertyStatus, reason?: string): Promise<void> => {
+    return ApiClient.patch(`/properties/${id}/status`, { status, reason });
+  },
+
   deleteProperty: (id: string): Promise<void> => {
     return ApiClient.delete(`/properties/${id}`);
   },

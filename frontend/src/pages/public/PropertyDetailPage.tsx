@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { propertyService } from '../../services/propertyService';
 import { favoriteService } from '../../services/favoriteService';
 import { inquiryService } from '../../services/inquiryService';
+import { crmService } from '../../services/crmService';
 import { PropertyDetail, PropertySummary } from '../../types/property';
 import { PropertyCard } from '../../components/common/PropertyCard';
 import { Modal } from '../../components/common/Modal';
@@ -49,6 +50,13 @@ export const PropertyDetailPage: React.FC = () => {
     'Hi, I am interested in this listing. Please contact me regarding private viewings and additional details.'
   );
   const [submittingInquiry, setSubmittingInquiry] = useState(false);
+
+  // Private Tour Modal
+  const [tourModalOpen, setTourModalOpen] = useState(false);
+  const [tourDate, setTourDate] = useState('');
+  const [tourType, setTourType] = useState<'IN_PERSON' | 'VIRTUAL_TOUR'>('IN_PERSON');
+  const [tourNotes, setTourNotes] = useState('');
+  const [submittingTour, setSubmittingTour] = useState(false);
 
   // Report Modal
   const [reportModalOpen, setReportModalOpen] = useState(false);
@@ -131,6 +139,31 @@ export const PropertyDetailPage: React.FC = () => {
       error(err.message || 'Failed to submit inquiry');
     } finally {
       setSubmittingInquiry(false);
+    }
+  };
+
+  const handleTourSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!property || !tourDate) return;
+
+    setSubmittingTour(true);
+    try {
+      await crmService.requestShowing({
+        propertyId: property.id,
+        clientName: inquiryName.trim() || 'Interested Buyer',
+        clientEmail: inquiryEmail.trim() || 'buyer@example.com',
+        clientPhone: inquiryPhone.trim() || undefined,
+        showingTime: new Date(tourDate).toISOString(),
+        showingType: tourType,
+        notes: tourNotes.trim() || undefined,
+      });
+      success('Walkthrough appointment requested! The agent will confirm shortly.');
+      setTourModalOpen(false);
+      setTourNotes('');
+    } catch (err: any) {
+      error(err.message || 'Failed to request tour');
+    } finally {
+      setSubmittingTour(false);
     }
   };
 
@@ -470,8 +503,16 @@ export const PropertyDetailPage: React.FC = () => {
             )}
 
             <button
+              onClick={() => setTourModalOpen(true)}
+              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md shadow-emerald-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.01]"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Book Private Walkthrough</span>
+            </button>
+
+            <button
               onClick={() => setInquiryModalOpen(true)}
-              className="w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl shadow-md shadow-primary-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.01]"
+              className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl shadow-md flex items-center justify-center space-x-2 transition-all"
             >
               <Send className="w-4 h-4" />
               <span>Send Direct Inquiry</span>
@@ -571,6 +612,96 @@ export const PropertyDetailPage: React.FC = () => {
               className="px-6 py-2.5 rounded-xl font-bold text-sm bg-primary-600 hover:bg-primary-700 text-white shadow-md shadow-primary-500/20 disabled:opacity-50"
             >
               {submittingInquiry ? 'Sending...' : 'Send Inquiry'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Book Private Tour Modal */}
+      <Modal
+        isOpen={tourModalOpen}
+        onClose={() => setTourModalOpen(false)}
+        title="Schedule Private Walkthrough / Tour"
+      >
+        <form onSubmit={handleTourSubmit} className="space-y-4">
+          <p className="text-xs text-slate-600">
+            Book an exclusive viewing for <strong>{property.title}</strong> directly with the assigned listing broker.
+          </p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Your Full Name *</label>
+              <input
+                type="text"
+                required
+                value={inquiryName}
+                onChange={(e) => setInquiryName(e.target.value)}
+                placeholder="Eleanor Vance"
+                className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
+              <input
+                type="email"
+                required
+                value={inquiryEmail}
+                onChange={(e) => setInquiryEmail(e.target.value)}
+                placeholder="eleanor@example.com"
+                className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Preferred Date & Time *</label>
+              <input
+                type="datetime-local"
+                required
+                value={tourDate}
+                onChange={(e) => setTourDate(e.target.value)}
+                className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Tour Format</label>
+              <select
+                value={tourType}
+                onChange={(e) => setTourType(e.target.value as any)}
+                className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              >
+                <option value="IN_PERSON">In-Person Walkthrough</option>
+                <option value="VIRTUAL_TOUR">Live Interactive Video Tour</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Special Notes / Requests</label>
+            <textarea
+              rows={2}
+              value={tourNotes}
+              onChange={(e) => setTourNotes(e.target.value)}
+              placeholder="e.g. Sunset viewing requested, bring building bylaw docs..."
+              className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+
+          <div className="pt-2 flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => setTourModalOpen(false)}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submittingTour}
+              className="px-5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-500/20 disabled:opacity-50"
+            >
+              {submittingTour ? 'Scheduling...' : 'Confirm Tour Request'}
             </button>
           </div>
         </form>

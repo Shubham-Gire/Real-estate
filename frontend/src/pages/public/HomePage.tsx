@@ -77,9 +77,9 @@ export const HomePage: React.FC = () => {
           <img
             src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80"
             alt="Luxury Real Estate"
-            className="w-full h-full object-cover object-center opacity-30"
+            className="w-full h-full object-cover object-center opacity-70"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/40"></div>
+          
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">

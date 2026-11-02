@@ -23,9 +23,10 @@ export const AdminLayout: React.FC = () => {
   };
 
   const navItems = [
-    { label: 'Platform Metrics', to: '/admin', icon: BarChart3, end: true },
+    { label: 'Executive Dashboard', to: '/admin', icon: BarChart3, end: true },
     { label: 'Property Moderation', to: '/admin/moderation', icon: CheckSquare },
-    { label: 'User Accounts', to: '/admin/users', icon: Users },
+    { label: 'User Governance', to: '/admin/users', icon: Users },
+    { label: 'Agent Verification', to: '/admin/agents', icon: ShieldAlert },
     { label: 'Abuse Reports', to: '/admin/reports', icon: AlertTriangle },
     { label: 'System Audit Logs', to: '/admin/audit-logs', icon: History },
   ];

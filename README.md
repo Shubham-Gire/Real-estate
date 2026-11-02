@@ -13,25 +13,21 @@ EstateHub is an enterprise-grade, multi-role real estate marketplace web applica
 
 ## 1. Key Features
 
-### Public Marketplace
-- **Dynamic Property Search & Filtering**: Multi-criteria search (city, locality, price boundaries, property type, transaction type SALE/RENT, bedrooms, bathrooms, furnishing, and amenities).
-- **Shareable URL Query Synchronization**: Every filter state is mirrored in the URL parameters for bookmarking and sharing.
-- **Rich Property Details**: Photo galleries, detailed architectural specs, owner/agent contact badges, inquiry forms, favorite toggles, and similar property recommendations.
-- **Abuse Reporting**: Community listing reporting with mandatory reasons reviewed in the admin portal.
+### 1. Distinct Portals & Multi-Role Architecture
 
-### User & Agent Dashboard
-- **Role-Based Experience**: Tailored controls for buyers (`ROLE_USER`), property owners, and verified agents (`ROLE_AGENT`).
-- **Listing Portfolio Management**: Create and edit property listings with multi-image uploads, thumbnail selection, and lifecycle status transitions (`DRAFT`, `PENDING_REVIEW`, `PUBLISHED`, `SOLD`, `RENTED`).
-- **Inquiry & Lead Management**: Receive direct buyer messages, update lead workflow status (`NEW`, `CONTACTED`, `RESOLVED`, `CLOSED`), and store internal notes.
-- **Favorites Center**: Persisted user favorites with instantaneous badge count updates.
-- **Profile & Security**: Manage personal particulars, brokerage credentials, and password rotation.
+EstateHub features three completely specialized, decoupled portals tailored to specific user workflows with distinct visual design systems:
 
-### Administrator Console (`/admin`)
-- **Real-Time Telemetry**: Aggregated metrics computed from PostgreSQL (total users, active agents, total listings, published, pending approvals, inquiries, and open reports).
-- **Property Moderation Queue**: Direct approval into `PUBLISHED` status or rejection with a mandatory reason delivered to the submitter. Listing suspension and restoration.
-- **User Directory**: Search and filter accounts, toggle access status (`ACTIVE` vs `SUSPENDED`), and assign roles while safeguarding against demoting or suspending the sole system administrator.
-- **Immutable Audit Logs**: Comprehensive audit trail recording actor identity, action type, entity ID, description, and IP address.
-- **Abuse Reports Queue**: Review and resolve flagged listings.
+1. **Client / Consumer & Owner Portal (`/portal/*`)**:
+   - **Visual Style**: Clean Emerald & Stone consumer theme.
+   - **Key Views**: Saved Wishlist (`/portal/favorites`), My Scheduled Tours & Walkthroughs (`/portal/showings`), Sent Inquiries (`/portal/inquiries`), My Listed Properties (`/portal/my-listings`), Post Property Listing Wizard (`/portal/submit-property`), and Account Profile (`/portal/profile`).
+2. **Real Estate Agent CRM Portal (`/agent/*`)**:
+   - **Visual Style**: High-density Deep Navy & Indigo brokerage cockpit.
+   - **Key Views**: CRM Cockpit (`/agent/dashboard`), Interactive 6-stage Kanban Lead Pipeline (`/agent/pipeline`), Deals & Commission Tracker (`/agent/deals`), Client CRM Directory (`/agent/contacts`), Showings & Tour Calendar (`/agent/showings`), Property Portfolio (`/agent/listings`), Revenue Analytics (`/agent/analytics`), and Agent Credentials & Licensing (`/agent/profile`).
+3. **Enterprise Admin Governance Portal (`/admin/*`)**:
+   - **Visual Style**: Dark Charcoal & Amber executive command center.
+   - **Key Views**: Platform KPIs & Telemetry (`/admin/dashboard`), Listing Moderation Queue (`/admin/moderation`) with mandatory rejection reasons, User Directory & Access Controls (`/admin/users`), Agent Verification & Licensing (`/admin/agents`), Abuse Reports Resolution (`/admin/reports`), and Immutable Audit Trail (`/admin/audit-logs`).
+4. **Public Marketplace**:
+   - Dynamic search, filters, interactive map, photo gallery, and direct **"Book Private Walkthrough"** widget seamlessly feeding into the Agent CRM lead engine.
 
 ---
 
@@ -192,12 +188,22 @@ cd frontend && npm run build
 | `POST` | `/api/v1/admin/properties/{id}/reject` | Admin Only | Reject property with mandatory rationale |
 | `GET` | `/api/v1/admin/users` | Admin Only | Paginated user management directory |
 | `GET` | `/api/v1/admin/audit-logs` | Admin Only | Query immutable system audit trail |
+| `GET` | `/api/v1/crm/stats` | Agent/Admin | CRM pipeline summary metrics & deal math |
+| `GET` | `/api/v1/crm/leads` | Agent/Admin | 6-stage Kanban lead directory |
+| `PATCH`| `/api/v1/crm/leads/{id}/stage` | Agent/Admin | Transition lead pipeline stage |
+| `GET` | `/api/v1/crm/deals` | Agent/Admin | Deals & commission tracker |
+| `GET` | `/api/v1/crm/contacts` | Agent/Admin | Client contacts directory |
+| `GET` | `/api/v1/crm/showings` | Agent/Admin | Agent showing & tour calendar |
+| `POST`| `/api/v1/showings` | Authenticated | Book private walkthrough (auto-leads CRM) |
+| `GET` | `/api/v1/showings/my` | Authenticated | Client's scheduled tours |
+| `PATCH`| `/api/v1/showings/{id}/status` | Agent/Admin | Confirm / complete tour with client feedback |
 
 ---
 
 ## 9. Documentation Directory
 
 Detailed specifications are maintained in the `docs/` folder:
+- `docs/microservices-and-multi-portal-architecture.md`: Comprehensive microservice domains, 3 specialized portals, Kanban CRM, and tour scheduling engine.
 - `docs/architecture.md`: Module boundaries, data flow diagrams, and threat models.
 - `docs/database-schema.md`: Entity-relationship diagram, table columns, constraints, and indexes.
 - `docs/api-specification.md`: Full REST endpoint schemas, query parameters, and error responses.
